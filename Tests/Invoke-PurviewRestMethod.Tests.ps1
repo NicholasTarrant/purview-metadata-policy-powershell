@@ -23,13 +23,13 @@ Describe 'Invoke-PurviewRestMethod - error shaping' {
             $caught = $_
         }
 
-        ($null -ne $caught) | Should Be $true
+        ($null -ne $caught) | Should -Be $true
         $message = $caught.Exception.Message
 
-        ($message -match 'Purview API error') | Should Be $true
-        ($message -like '*HTTP*unknown*') | Should Be $true
-        ($message -match 'network down') | Should Be $true
-        ($message -match 'GET https://contoso\.purview\.azure\.com/policystore/metadataPolicies\?api-version=2021-07-01') | Should Be $true
+        ($message -match 'Purview API error') | Should -Be $true
+        ($message -like '*HTTP*unknown*') | Should -Be $true
+        ($message -match 'network down') | Should -Be $true
+        ($message -match 'GET https://contoso\.purview\.azure\.com/policystore/metadataPolicies\?api-version=2021-07-01') | Should -Be $true
 
         Remove-Item function:script:Get-AzAccessToken -ErrorAction SilentlyContinue
         Remove-Item function:script:Invoke-RestMethod -ErrorAction SilentlyContinue
@@ -53,11 +53,11 @@ Describe 'Invoke-PurviewRestMethod - error shaping' {
             $caught = $_
         }
 
-        ($null -ne $caught) | Should Be $true
+        ($null -ne $caught) | Should -Be $true
         $message = $caught.Exception.Message
 
-        ($message -match 'api-version=2019-11-01-preview') | Should Be $true
-        ($message -match 'request failed') | Should Be $true
+        ($message -match 'api-version=2019-11-01-preview') | Should -Be $true
+        ($message -match 'request failed') | Should -Be $true
 
         Remove-Item function:script:Get-AzAccessToken -ErrorAction SilentlyContinue
         Remove-Item function:script:Invoke-RestMethod -ErrorAction SilentlyContinue

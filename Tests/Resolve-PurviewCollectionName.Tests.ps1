@@ -14,8 +14,8 @@ Describe 'Resolve-PurviewCollectionName' {
 
         $result = Resolve-PurviewCollectionName -AccountName 'acct' -CollectionName 'abc123'
 
-        $result | Should Be 'abc123'
-        $script:invokeCount | Should Be 0
+        $result | Should -Be 'abc123'
+        $script:invokeCount | Should -Be 0
 
         Remove-Item function:script:Invoke-PurviewRestMethod -ErrorAction SilentlyContinue
     }
@@ -55,8 +55,8 @@ Describe 'Resolve-PurviewCollectionName' {
 
         $result = Resolve-PurviewCollectionName -AccountName 'acct' -CollectionName 'Engineering'
 
-        $result | Should Be 'eng999'
-        $script:invokeCount | Should Be 2
+        $result | Should -Be 'eng999'
+        $script:invokeCount | Should -Be 2
 
         Remove-Item function:script:Invoke-PurviewRestMethod -ErrorAction SilentlyContinue
     }
@@ -80,8 +80,8 @@ Describe 'Resolve-PurviewCollectionName' {
             $caught = $_
         }
 
-        ($null -ne $caught) | Should Be $true
-        ($caught.Exception.Message -match 'Multiple Purview collections matched') | Should Be $true
+        ($null -ne $caught) | Should -Be $true
+        ($caught.Exception.Message -match 'Multiple Purview collections matched') | Should -Be $true
 
         Remove-Item function:script:Invoke-PurviewRestMethod -ErrorAction SilentlyContinue
     }

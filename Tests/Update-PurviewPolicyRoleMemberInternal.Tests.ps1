@@ -55,9 +55,9 @@ Describe 'Update-PurviewPolicyRoleMemberInternal - exact role matching' {
         $nonTargetPrincipalCondition = $result.Policy.properties.attributeRules[1].dnfCondition[0] |
             Where-Object { $_.attributeName -eq 'principal.microsoft.id' }
 
-        $result.Updated | Should Be $true
-        (@($targetPrincipalCondition.attributeValueIncludedIn) -contains $principalId) | Should Be $true
-        @($nonTargetPrincipalCondition.attributeValueIncludedIn).Count | Should Be 0
+        $result.Updated | Should -Be $true
+        (@($targetPrincipalCondition.attributeValueIncludedIn) -contains $principalId) | Should -Be $true
+        @($nonTargetPrincipalCondition.attributeValueIncludedIn).Count | Should -Be 0
     }
 
     It 'does not update when only partial role text matches another rule' {
@@ -86,7 +86,7 @@ Describe 'Update-PurviewPolicyRoleMemberInternal - exact role matching' {
 
         $result = Update-PurviewPolicyRoleMemberInternal -Policy $policy -RoleId 'purviewmetadatarole_builtin_data-curator' -PrincipalId '00000000-0000-0000-0000-000000000002' -Action Add -PrincipalType User
 
-        $result.Updated | Should Be $false
+        $result.Updated | Should -Be $false
     }
 
     It 'keeps attributeValueIncludedIn as array after remove leaves one member' {
@@ -123,8 +123,8 @@ Describe 'Update-PurviewPolicyRoleMemberInternal - exact role matching' {
         $principalCondition = $result.Policy.properties.attributeRules[0].dnfCondition[0] |
             Where-Object { $_.attributeName -eq 'principal.microsoft.id' }
 
-        $result.Updated | Should Be $true
-        @($principalCondition.attributeValueIncludedIn).Count | Should Be 1
-        $principalCondition.attributeValueIncludedIn.GetType().Name | Should Be 'Object[]'
+        $result.Updated | Should -Be $true
+        @($principalCondition.attributeValueIncludedIn).Count | Should -Be 1
+        $principalCondition.attributeValueIncludedIn.GetType().Name | Should -Be 'Object[]'
     }
 }

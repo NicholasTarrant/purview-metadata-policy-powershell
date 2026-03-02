@@ -36,9 +36,14 @@ if ($errorCount -gt 0) {
 Write-Host '== Pester tests =='
 $testsPath = Join-Path $repoRoot 'Tests'
 if (Test-Path $testsPath) {
-    if (-not (Get-Module -ListAvailable -Name Pester)) {
-        Install-Module Pester -Scope CurrentUser -Force -ErrorAction Stop
+    $requiredPesterVersion = [version]'5.7.1'
+    $availablePester = Get-Module -ListAvailable -Name Pester | Sort-Object Version -Descending | Select-Object -First 1
+
+    if ($null -eq $availablePester -or [version]$availablePester.Version -lt $requiredPesterVersion) {
+        Install-Module Pester -RequiredVersion $requiredPesterVersion -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction Stop
     }
+
+    Import-Module Pester -RequiredVersion $requiredPesterVersion -Force -ErrorAction Stop
 
     $invokePester = Get-Command Invoke-Pester -ErrorAction Stop
     $pesterParams = @{}
