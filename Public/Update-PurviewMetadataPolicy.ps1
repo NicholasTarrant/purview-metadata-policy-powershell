@@ -1,0 +1,82 @@
+function Update-PurviewMetadataPolicy {
+    <#
+    .SYNOPSIS
+    Writes an updated metadata policy back to a Microsoft Purview account.
+
+    .DESCRIPTION
+    Issues an HTTP PUT to /policystore/metadataPolicies/{policyId} with the provided
+    policy object serialised as JSON. This replaces the entire policy document, so the
+    PolicyObject must be the complete policy — not a partial update.
+
+    In most cases you do not need to call this directly. Add-PurviewCollectionRoleMember
+    and Remove-PurviewCollectionRoleMember call it internally after modifying the policy.
+    Use this function when you need to make structural changes to a policy that go beyond
+    adding or removing principals.
+
+    .PARAMETER AccountName
+    The name of the Microsoft Purview account (the subdomain portion of
+    https://<AccountName>.purview.azure.com).
+
+    .PARAMETER PolicyId
+    The GUID of the metadata policy to update. Must match the 'id' field in PolicyObject.
+    Obtain the policy ID from Get-PurviewMetadataPolicy.
+
+    .PARAMETER PolicyObject
+    The complete policy object to write. Retrieve this via Get-PurviewMetadataPolicy,
+    modify it, then pass it here. The object is serialised with ConvertTo-Json -Depth 20
+    before transmission to preserve nested array structures.
+
+    .OUTPUTS
+    PSCustomObject. The updated policy object as returned by the Purview API after the PUT.
+
+    .NOTES
+    This is a full-document PUT. Any attributeRules or decisionRules omitted from
+    PolicyObject will be removed from the live policy. Always retrieve the current policy
+    before modifying and submitting it.
+
+    Requires an active Az.Accounts session with the Purview Collection Administrator role
+    on the target collection.
+
+    .EXAMPLE
+    $policy = Get-PurviewMetadataPolicy -AccountName 'contoso-purview' -CollectionName 'Finance Team'
+    # Inspect what is currently in the policy
+    $policy.properties.attributeRules
+    # Submit the unmodified policy back (no-op, confirms round-trip serialisation works)
+    Update-PurviewMetadataPolicy -AccountName 'contoso-purview' -PolicyId $policy.id -PolicyObject $policy
+
+    .EXAMPLE
+    $policy = Get-PurviewMetadataPolicy -AccountName 'contoso-purview' -CollectionName 'Finance Team'
+    # Clear all explicit members from the data-curator rule (advanced, use with care)
+    $rule = $policy.properties.attributeRules | Where-Object { $_.id -like '*data-curator*' }
+    $cond = $rule.dnfCondition[0] | Where-Object { $_.attributeName -eq 'principal.microsoft.id' }
+    $cond.attributeValueIncludedIn = @()
+    Update-PurviewMetadataPolicy -AccountName 'contoso-purview' -PolicyId $policy.id -PolicyObject $policy
+
+    Directly clears all explicit user/SP members from the data-curator role on a collection.
+    Prefer Remove-PurviewCollectionRoleMember for individual removals.
+    #>
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$AccountName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$PolicyId,
+
+        [Parameter(Mandatory = $true)]
+        [psobject]$PolicyObject
+    )
+
+    $UriSuffix = "/policystore/metadataPolicies/$PolicyId"
+    
+    # Convert object back to JSON, ensuring we don't truncate depth
+    $BodyJson = $PolicyObject | ConvertTo-Json -Depth 20 -Compress
+
+    if (-not $PSCmdlet.ShouldProcess("$AccountName/$PolicyId", "Update Purview metadata policy")) {
+        return
+    }
+
+    $Response = Invoke-PurviewRestMethod -AccountName $AccountName -UriSuffix $UriSuffix -Method PUT -Body $BodyJson
+
+    return $Response
+}

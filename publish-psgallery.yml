@@ -1,0 +1,47 @@
+name: Publish to PowerShell Gallery
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    if: ${{ vars.ENABLE_PSGALLERY_PUBLISH == 'true' }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate manifest and version
+        shell: pwsh
+        run: |
+          $manifest = Test-ModuleManifest -Path ./PurviewMetadataPolicy.psd1
+          $moduleVersion = [version]$manifest.Version
+          $moduleName = $manifest.Name
+
+          Write-Host "Module: $moduleName"
+          Write-Host "Version: $moduleVersion"
+
+          try {
+            $published = Find-Module -Name $moduleName -Repository PSGallery -ErrorAction Stop
+            if ([version]$published.Version -ge $moduleVersion) {
+              throw "Version $moduleVersion is not greater than PSGallery version $($published.Version)."
+            }
+          }
+          catch {
+            Write-Host "No existing PSGallery package found or lookup failed; continuing."
+          }
+
+      - name: Publish module
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PSGALLERY_API_KEY)) {
+            throw 'PSGALLERY_API_KEY secret is required.'
+          }
+
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGALLERY_API_KEY -Force

@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  quality-pwsh:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run quality checks (PowerShell 7)
+        shell: pwsh
+        run: ./scripts/Test-ModuleQuality.ps1
+
+  quality-winps:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run quality checks (Windows PowerShell 5.1)
+        shell: powershell
+        run: ./scripts/Test-ModuleQuality.ps1
