@@ -43,5 +43,32 @@ jobs:
             throw 'PSGALLERY_API_KEY secret is required.'
           }
 
+          $moduleName = 'PurviewMetadataPolicy'
+          $stagingRoot = Join-Path $PWD '.publish'
+          $modulePath = Join-Path $stagingRoot $moduleName
+
+          if (Test-Path $stagingRoot) {
+            Remove-Item -Recurse -Force $stagingRoot
+          }
+
+          New-Item -ItemType Directory -Path $modulePath | Out-Null
+
+          $includePaths = @(
+            'PurviewMetadataPolicy.psd1'
+            'PurviewMetadataPolicy.psm1'
+            'Public'
+            'Private'
+            'docs'
+            'LICENSE'
+            'README.md'
+            'CHANGELOG.md'
+          )
+
+          foreach ($path in $includePaths) {
+            if (Test-Path $path) {
+              Copy-Item -Path $path -Destination $modulePath -Recurse -Force
+            }
+          }
+
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-          Publish-Module -Path . -Repository PSGallery -NuGetApiKey $env:PSGALLERY_API_KEY -Force
+          Publish-Module -Path $modulePath -Repository PSGallery -NuGetApiKey $env:PSGALLERY_API_KEY -Force
