@@ -21,10 +21,10 @@ ModuleVersion = '0.1.0'
 GUID = '61c8a72d-477a-427c-bdc0-ea21534b8c2d'
 
 # Author of this module
-Author = 'nicho'
+Author = 'Nicholas Tarrant'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = 'Nicholas Tarrant'
 
 # Copyright statement for this module
 Copyright = '(c) nicho. All rights reserved.'
@@ -104,10 +104,10 @@ PrivateData = @{
         Tags = @('Purview', 'Azure', 'Governance', 'RBAC', 'IaC', 'MetadataPolicy', 'Microsoft365')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/NicholasTarrant/purview-metadata-policy-powershell/blob/main/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/NicholasTarrant/purview-metadata-policy-powershell'
 
         # A URL to an icon representing this module.
         # IconUri = ''

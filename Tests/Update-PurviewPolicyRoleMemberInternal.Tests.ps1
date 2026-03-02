@@ -88,4 +88,43 @@ Describe 'Update-PurviewPolicyRoleMemberInternal - exact role matching' {
 
         $result.Updated | Should Be $false
     }
+
+    It 'keeps attributeValueIncludedIn as array after remove leaves one member' {
+        $targetRoleId = 'purviewmetadatarole_builtin_purview-reader'
+
+        $policy = [pscustomobject]@{
+            properties = [pscustomobject]@{
+                attributeRules = @(
+                    [pscustomobject]@{
+                        id = 'rule-reader'
+                        name = 'rule-reader'
+                        dnfCondition = @(
+                            @(
+                                [pscustomobject]@{
+                                    attributeName = 'principal.microsoft.id'
+                                    attributeValueIncludedIn = @(
+                                        '00000000-0000-0000-0000-000000000111',
+                                        '00000000-0000-0000-0000-000000000222'
+                                    )
+                                },
+                                [pscustomobject]@{
+                                    attributeName = 'derived.purview.role'
+                                    attributeValueIncludes = $targetRoleId
+                                }
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
+        $result = Update-PurviewPolicyRoleMemberInternal -Policy $policy -RoleId $targetRoleId -PrincipalId '00000000-0000-0000-0000-000000000222' -Action Remove -PrincipalType User
+
+        $principalCondition = $result.Policy.properties.attributeRules[0].dnfCondition[0] |
+            Where-Object { $_.attributeName -eq 'principal.microsoft.id' }
+
+        $result.Updated | Should Be $true
+        @($principalCondition.attributeValueIncludedIn).Count | Should Be 1
+        $principalCondition.attributeValueIncludedIn.GetType().Name | Should Be 'Object[]'
+    }
 }

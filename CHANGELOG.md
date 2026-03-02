@@ -14,6 +14,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Private-to-public repository mirror workflow with allowlisted file sync
 - PSGallery publish workflow gated by repository variable and API key secret
 - Maintainer release guide at `docs/RELEASING.md`
+- Pester coverage for collection name resolution edge cases (system-name short-circuit, paging, ambiguity)
+- Pester regression coverage for single-item remove payload shape (`attributeValueIncludedIn` remains an array)
+
+### Changed
+- Manifest metadata polished for public distribution (`Author`, `CompanyName`, `ProjectUri`, `LicenseUri`)
 
 ### Fixed
 - Restored true PowerShell 5.1 compatibility by replacing PowerShell 7-only null-conditional/null-coalescing operators in REST error handling
