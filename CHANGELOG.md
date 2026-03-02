@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-## [Unreleased]
+\#\#\ \[Unreleased]\r\n\r\n\#\#\ \[0\.1\.1]\ -\ 2026-03-02
 
 ### Added
 - GitHub Actions CI workflow for manifest validation, ScriptAnalyzer, and Pester on PowerShell 7 and Windows PowerShell 5.1
@@ -47,3 +47,4 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Private `Get-PurviewMetadataRoleIds` — returns role IDs as strings for error message construction
 - Private `Update-PurviewPolicyRoleMemberInternal` — core dnfCondition mutation logic (add/remove)
 - Private `Find-PrincipalConditionEntry` — locates the principal condition block within a policy's attributeRules
+
