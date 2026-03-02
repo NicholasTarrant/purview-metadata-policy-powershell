@@ -145,6 +145,6 @@ Full documentation: `Get-Help <CommandName> -Full`
 
 This project supports a private-source/public-release workflow with PowerShell Gallery publishing via GitHub Actions.
 
-- See [docs/RELEASING.md](docs/RELEASING.md) for required secrets/variables and the release flow.
 - CI quality checks are defined in `.github/workflows/ci.yml`.
+- Mirror-to-public sync runs from private `main` pushes (serialized to avoid race failures).
 - Public release publishing is defined in `.github/workflows/publish-psgallery.yml`.

@@ -6,6 +6,10 @@ on:
       - 'v*'
   workflow_dispatch:
 
+concurrency:
+  group: publish-psgallery
+  cancel-in-progress: false
+
 jobs:
   publish:
     if: ${{ vars.ENABLE_PSGALLERY_PUBLISH == 'true' }}
@@ -24,14 +28,22 @@ jobs:
           Write-Host "Module: $moduleName"
           Write-Host "Version: $moduleVersion"
 
-          try {
-            $published = Find-Module -Name $moduleName -Repository PSGallery -ErrorAction Stop
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $tagVersion = $env:GITHUB_REF.Substring('refs/tags/v'.Length)
+            if ([version]$tagVersion -ne $moduleVersion) {
+              throw "Tag version v$tagVersion does not match manifest version $moduleVersion."
+            }
+          }
+
+          $published = Find-Module -Name $moduleName -Repository PSGallery -ErrorAction SilentlyContinue
+          if ($null -ne $published) {
+            Write-Host "Latest PSGallery version: $($published.Version)"
             if ([version]$published.Version -ge $moduleVersion) {
               throw "Version $moduleVersion is not greater than PSGallery version $($published.Version)."
             }
           }
-          catch {
-            Write-Host "No existing PSGallery package found or lookup failed; continuing."
+          else {
+            Write-Host "No existing PSGallery package found; continuing."
           }
 
       - name: Publish module

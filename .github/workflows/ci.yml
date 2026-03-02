@@ -12,6 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Pester 5.7.1
+        shell: pwsh
+        run: |
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force -SkipPublisherCheck
+          Import-Module Pester -RequiredVersion 5.7.1 -Force
+
       - name: Run quality checks (PowerShell 7)
         shell: pwsh
         run: ./scripts/Test-ModuleQuality.ps1
@@ -21,6 +27,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Pester 5.7.1
+        shell: powershell
+        run: |
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force -SkipPublisherCheck
+          Import-Module Pester -RequiredVersion 5.7.1 -Force
 
       - name: Run quality checks (Windows PowerShell 5.1)
         shell: powershell
