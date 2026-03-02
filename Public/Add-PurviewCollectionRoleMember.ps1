@@ -107,6 +107,22 @@ function Add-PurviewCollectionRoleMember {
         [string]$CollectionName,
 
         [Parameter(Mandatory = $true)]
+        [ArgumentCompleter({
+            param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+            $builtInRoles = @(
+                'purviewmetadatarole_builtin_collection-administrator'
+                'purviewmetadatarole_builtin_data-source-administrator'
+                'purviewmetadatarole_builtin_data-curator'
+                'purviewmetadatarole_builtin_purview-reader'
+                'purviewmetadatarole_builtin_data-share-contributor'
+                'purviewmetadatarole_builtin_policy-author'
+                'purviewmetadatarole_builtin_workflow-administrator'
+                'purviewmetadatarole_builtin_insights-reader'
+            )
+
+            $builtInRoles | Where-Object { $_ -like "$wordToComplete*" }
+        })]
         [string]$RoleId,
 
         [Parameter(Mandatory = $true)]
