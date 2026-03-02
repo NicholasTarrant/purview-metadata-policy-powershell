@@ -34,7 +34,7 @@ $tagName = "v$newVersion"
 $dateText = (Get-Date).ToString('yyyy-MM-dd')
 
 $manifestRaw = Get-Content -Path $manifestPath -Raw -Encoding UTF8
-$manifestUpdated = $manifestRaw -replace "ModuleVersion\s*=\s*'[^']+'", "ModuleVersion = '$newVersion'"
+$manifestUpdated = $manifestRaw -replace "(?m)^ModuleVersion\s*=\s*'[^']+'", "ModuleVersion = '$newVersion'"
 if ($manifestUpdated -eq $manifestRaw) {
     throw 'ModuleVersion was not updated. Check manifest format.'
 }
