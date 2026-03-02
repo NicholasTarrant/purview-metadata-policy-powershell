@@ -106,6 +106,6 @@ function Invoke-PurviewRestMethod {
             $statusCode = 'unknown'
         }
 
-        throw "Purview API error ($Method $FullUri) — HTTP $statusCode`: $message"
+        throw "Purview API error ($Method $FullUri) - HTTP $statusCode`: $message"
     }
 }

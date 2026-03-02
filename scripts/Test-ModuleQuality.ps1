@@ -20,7 +20,10 @@ $analyzeTargets = @(
     (Join-Path $repoRoot 'Private')
 )
 
-$saResults = Invoke-ScriptAnalyzer -Path $analyzeTargets -Recurse -Severity Error,Warning
+$saResults = @()
+foreach ($targetPath in $analyzeTargets) {
+    $saResults += Invoke-ScriptAnalyzer -Path $targetPath -Recurse -Severity Error,Warning
+}
 if ($saResults) {
     $saResults | Select-Object RuleName, Severity, ScriptName, Line, Message | Format-Table -AutoSize
 }
