@@ -153,7 +153,11 @@ function Add-PurviewCollectionRoleMember {
     if ($UpdateResult.Updated) {
         Write-Verbose "Policy modified. Pushing update to Purview."
 
-        $PolicyId = $UpdateResult.Policy.id
+        $PolicyId = $null
+        if ($null -ne $UpdateResult.Policy -and $UpdateResult.Policy.PSObject.Properties.Name -contains 'id') {
+            $PolicyId = [string]$UpdateResult.Policy.id
+        }
+
         if ([string]::IsNullOrWhiteSpace($PolicyId)) {
             throw "Could not determine Policy ID from the retrieved policy object."
         }
